@@ -29,6 +29,7 @@ void setup() {
   digitalWrite(trampPin, LOW);
   digitalWrite(touchPin, LOW);
 
+     // Starter I2C-busen
   Wire.begin();
 
   err = ak09918.initialize();
@@ -40,7 +41,7 @@ void setup() {
       delay(100);
       err = ak09918.isDataReady();
   }  
-
+    // Kalibrerer magnetsensor
   err = ak09918.getData(&x, &y, &z);
   kalibrasjon = z;
 }
@@ -61,13 +62,12 @@ void loop() {
 }
 
   // Sjekker om steinen har passert en stein, gir true/false som output.
-  // Fungerer ved å lagre den høyeste verdien den har målt. Når denne verdien passerer et punkt
 bool magnetStatus() {
 
   err = ak09918.getData(&x, &y, &z);    // Leser av Magnetsensor
   double magnetVerdi = abs(z - kalibrasjon);     // Konverterer inputen. Omtrent 0 i nøytral tilstand
   
-   Serial.println(magnetVerdi);         // Kan brukes til feilsøking
+   //Serial.println(magnetVerdi);         // Kan brukes til feilsøking
   // Serial.print(", ");                
   
   if (magnetVerdi > magnetMax) {
