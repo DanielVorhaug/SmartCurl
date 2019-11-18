@@ -11,9 +11,10 @@ const int trampPin = 5;
 const int touchPin = 4;
 
 const int touchThreshold = 100;
-const int feltThreshold = 20;
+const int magnetfeltThreshold = 35;
 
 double magnetMax = 0;
+double kalibrasjon = 0;
 
 void setup() {
 
@@ -38,9 +39,10 @@ void setup() {
       Serial.print("Waiting Sensor");
       delay(100);
       err = ak09918.isDataReady();
-  }
-  
-  
+  }  
+
+  err = ak09918.getData(&x, &y, &z);
+  kalibrasjon = z;
 }
 
 void loop() {
@@ -54,28 +56,35 @@ void loop() {
     delay(1000);
     digitalWrite(trampPin, LOW);
   }
+  
   delay(10);
 }
 
+  // Sjekker om steinen har passert en stein, gir true/false som output.
+  // Fungerer ved å lagre den høyeste verdien den har målt. Når denne verdien passerer et punkt
 bool magnetStatus() {
 
-  err = ak09918.getData(&x, &y, &z);
-  double magnetVerdi = abs(z + 70);
-  // Serial.print(magnetVerdi);
-  // Serial.print(", ");
-
+  err = ak09918.getData(&x, &y, &z);    // Leser av Magnetsensor
+  double magnetVerdi = abs(z - kalibrasjon);     // Konverterer inputen. Omtrent 0 i nøytral tilstand
+  
+   Serial.println(magnetVerdi);         // Kan brukes til feilsøking
+  // Serial.print(", ");                
+  
   if (magnetVerdi > magnetMax) {
     magnetMax = magnetVerdi;
-  } else if (magnetMax - 100 > magnetVerdi) {
+  } else if (magnetMax - magnetfeltThreshold > magnetVerdi) {
     magnetMax = 0;
     return true;
   }
   return false;  
 }
 
-bool touch() {
+  // Sjekker om steinen blir holdt på, gir true/false som output.
+bool touch() {  
   long sensorValue = cap.capacitiveSensor(30);
-  // Serial.println(sensorValue);
+  
+  // Serial.println(sensorValue);     // Kan brukes til feilsøking
+  
   if (sensorValue > touchThreshold) {
     digitalWrite(touchPin, HIGH);
     return true;
