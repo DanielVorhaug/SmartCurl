@@ -11,7 +11,7 @@ const int trampPin = 5;
 const int touchPin = 4;
 
 const int touchThreshold = 100;
-const int magnetfeltThreshold = 50;
+const int magnetfeltThreshold = 35;
 
 double magnetMax = 0;
 double kalibrasjon = 0;
@@ -65,7 +65,7 @@ void loop() {
 bool magnetStatus() {
 
   err = ak09918.getData(&x, &y, &z);    // Leser av Magnetsensor
-  double magnetVerdi = 10*abs(z - kalibrasjon);     // Konverterer inputen. Omtrent 0 i nøytral tilstand
+  double magnetVerdi = abs(z - kalibrasjon);     // Konverterer inputen. Omtrent 0 i nøytral tilstand
   
   //Serial.print(magnetVerdi);         // Kan brukes til feilsøking
   //Serial.print(", ");                
