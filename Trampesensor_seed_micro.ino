@@ -1,6 +1,6 @@
 #include <CapacitiveSensor.h>
-#include "AK09918.h"
 #include <Wire.h>
+#include "AK09918.h"
 CapacitiveSensor cap = CapacitiveSensor(7,9);
 
 AK09918_err_type_t err;
@@ -11,7 +11,7 @@ const int trampPin = 5;
 const int touchPin = 4;
 
 const int touchThreshold = 100;
-const int magnetfeltThreshold = 35;
+const int magnetfeltThreshold = 50;
 
 double magnetMax = 0;
 double kalibrasjon = 0;
@@ -65,10 +65,10 @@ void loop() {
 bool magnetStatus() {
 
   err = ak09918.getData(&x, &y, &z);    // Leser av Magnetsensor
-  double magnetVerdi = abs(z - kalibrasjon);     // Konverterer inputen. Omtrent 0 i nøytral tilstand
+  double magnetVerdi = 10*abs(z - kalibrasjon);     // Konverterer inputen. Omtrent 0 i nøytral tilstand
   
-   //Serial.println(magnetVerdi);         // Kan brukes til feilsøking
-  // Serial.print(", ");                
+  //Serial.print(magnetVerdi);         // Kan brukes til feilsøking
+  //Serial.print(", ");                
   
   if (magnetVerdi > magnetMax) {
     magnetMax = magnetVerdi;
@@ -83,7 +83,7 @@ bool magnetStatus() {
 bool touch() {  
   long sensorValue = cap.capacitiveSensor(30);
   
-  // Serial.println(sensorValue);     // Kan brukes til feilsøking
+  //Serial.println(sensorValue);     // Kan brukes til feilsøking
   
   if (sensorValue > touchThreshold) {
     digitalWrite(touchPin, HIGH);
